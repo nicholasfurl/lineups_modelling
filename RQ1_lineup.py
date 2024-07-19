@@ -313,17 +313,17 @@ def get_trial_distances(face_descriptions, dat, gender):
 
     ####THE DISTANCES PLOT!!!!!######
     fontsize = 20
-    fig, axs = plt.subplots(2, 1, figsize=(8, 10))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 10))
     
     # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
     colors = ['red','green','blue']
     customPalette = sns.set_palette(sns.color_palette(colors))
     
-    hue_order = ["Veridical", "Caricature", "Anticaricature"]
+    hue_order = ["Anticaricature", "Veridical", "Caricature"]
     
     # Filter DataFrame for Target present rows and create the strip plot
-    
-    target_present = distances_plot_data[distances_plot_data['Lineup type'] == 'Target present']
+    target_present = distances_plot_data[(distances_plot_data['Face type'] == 'Perp') | (distances_plot_data['Face type'] == 'Suspect')]
+    # target_present = distances_plot_data[distances_plot_data['Lineup type'] == 'Target present']
     sns.stripplot(ax=axs[0], x='Face type', y='Nearest distance', hue='Test caricature', data=target_present,
                   hue_order=hue_order, dodge=True, jitter=True)
     axs[0].set_title('Target present', fontsize=fontsize)
@@ -335,16 +335,16 @@ def get_trial_distances(face_descriptions, dat, gender):
     # axs[0].set_yticks(np.arange(400, 1001, 200))
 
     
-    target_absent = distances_plot_data[distances_plot_data['Lineup type'] == 'Target absent']
-    sns.stripplot(ax=axs[1], x='Face type', y='Nearest distance', hue='Test caricature', data=target_absent,
-                  hue_order=hue_order, dodge=True, jitter=True)
-    axs[1].set_title('Target absent',fontsize=fontsize)
-    axs[1].tick_params(labelsize=fontsize)  # Increase tick label font size
-    axs[1].set_xlabel('')  # Suppress x-axis label
-    axs[1].get_legend().remove()  # Suppress legend on the second plot
-    # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    # axs[1].set_ylim(350, 1100)  # Set y-axis limits
-    # axs[1].set_yticks(np.arange(400, 1001, 200))
+    # target_absent = distances_plot_data[distances_plot_data['Lineup type'] == 'Target absent']
+    # sns.stripplot(ax=axs[1], x='Face type', y='Nearest distance', hue='Test caricature', data=target_absent,
+    #               hue_order=hue_order, dodge=True, jitter=True)
+    # axs[1].set_title('Target absent',fontsize=fontsize)
+    # axs[1].tick_params(labelsize=fontsize)  # Increase tick label font size
+    # axs[1].set_xlabel('')  # Suppress x-axis label
+    # axs[1].get_legend().remove()  # Suppress legend on the second plot
+    # # Set y-axis ticks every 200 starting at 400 and finishing at 1000
+    # # axs[1].set_ylim(350, 1100)  # Set y-axis limits
+    # # axs[1].set_yticks(np.arange(400, 1001, 200))
 
     
     # Set x-axis label font size
@@ -814,16 +814,16 @@ filenames, face_descriptions = get_face_descriptions_from_files()
 
 
 #########Set up vgg16 model
-# from keras.applications import vgg16
-# from keras.models import Model
-# model = vgg16.VGG16(weights='imagenet', include_top=True)
-# model2 = Model(model.input, model.layers[-2].output)
-# from keras.applications.vgg16 import preprocess_input    
+from keras.applications import vgg16
+from keras.models import Model
+model = vgg16.VGG16(weights='imagenet', include_top=True)
+model2 = Model(model.input, model.layers[-2].output)
+from keras.applications.vgg16 import preprocess_input    
 
 #########Set up vggFACE model
-from keras_vggface.vggface import VGGFace
-model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
-from keras_vggface.utils import preprocess_input
+# from keras_vggface.vggface import VGGFace
+# model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
+# from keras_vggface.utils import preprocess_input
 
 
 #########Proprocess images and project them into model space
