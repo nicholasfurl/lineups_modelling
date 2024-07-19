@@ -18,71 +18,31 @@ def get_oldnew_trials(face_descriptions,gender):
     #I'm going to abandon race matching the new items. I think with enough randomisations over participants this will average out, I'm not 100% sure we have enough faces for this never to produce an error when we run out of a gender / race combo and I don't know if this was done in behavioural study or not
     
 
-    num_fillers = 4 #doesn't get used until much later but this is a place for definitions right at the top
-    
-    #In practice I don't think we can make enough lineups if we match everything and have equal genders or one gender unless we reduce num_perps. I'm going to comment this out for now to make the code a bit less messy but in principle, you could uncomment this, reduce the num_perps (by a lot) and then run it with balanced genders.
-    if (gender != 'None'):
+    num_fillers = 4 
+      
+    #There are 21 "old" perps (one of these counterbalances)! So there should be 42 lineups when doubled.
+    ids_fixed_cb1 = ['CFD-WM-003-006-HC.jpg','CFD-WM-033-006-HC.jpg','CFD-WM-022-003-HC.jpg','CFD-BM-002-013-N.jpg','CFD-BM-025-035-N.jpg','CFD-BM-030-003-N.jpg','CFD-WM-103_08.jpg','CFD-WM-128_08.jpg','CFD-WM-018_08.jpg','CFD-BM-114_03.jpg','CFD-E-067_03.jpg','CFD-A-037_03.jpg','CFD-WF-001-010-HC.jpg','CFD-WF-015-023-HC.jpg','CFD-WF-007-005-HC.jpg','CFD-BF-004-009-HO.jpg','CFD-BF-006-008-HC.jpg','CFD-BF-035-027-HO.jpg','CFD-BF-048-002-N.jpg','CFD-BF-031-002-N.jpg','CFD-WF-013_03.jpg']
         
-        # #num perps + suspects (20 perps, 20 suspects)
-        # #I'm just going to continue using legacy name num_perps (can change later for publication)
-        num_perps = 40
-        
-        # if (gender == "All"):
-        #     num_male_perps = int(num_perps/2)
-        #     num_female_perps = int(num_perps/2)
-        # elif (gender == "Man"):
-        #     num_male_perps = int(num_perps)
-        #     num_female_perps = 0
-        # elif (gender == "Woman"):
-        #     num_male_perps = 0
-        #     num_female_perps = int(num_perps)
-            
-        # # Randomly sample male identities for half of the perps
-        # identity_nums_male = face_descriptions[face_descriptions['Gender'] == 'Man']['Identity'].unique()
-        # identity_nums_perps_male = identity_nums_male[np.random.choice(identity_nums_male.shape[0], size=num_male_perps, replace=False)]
-        
-        # # Randomly sample female identities for other half of the perps
-        # identity_nums_female = face_descriptions[face_descriptions['Gender'] == 'Woman']['Identity'].unique()
-        # identity_nums_perps_female = identity_nums_female[np.random.choice(identity_nums_female.shape[0], size=num_female_perps, replace=False)]
-        
-        # #In case males concatenated with females, redistribute so equal genders for matches and mismatches
-        # identity_nums_perps = np.concatenate((identity_nums_perps_male, identity_nums_perps_female))
-            
-        # # Split the array into quarters
-        # quarter_size = len(identity_nums_perps) // 4
-        # first_quarter = identity_nums_perps[:quarter_size]
-        # second_quarter = identity_nums_perps[quarter_size:2*quarter_size]
-        # third_quarter = identity_nums_perps[2*quarter_size:3*quarter_size]
-        # fourth_quarter = identity_nums_perps[3*quarter_size:]
-        
-        # # Reorganize the second and third quarters
-        # identity_nums_perps = np.concatenate((first_quarter, third_quarter, second_quarter, fourth_quarter))
-        
-    else:   #if gender = 'None', just randonmly sample the number you need
-        
-        ids_fixed_cb1 = ['CFD-WM-003-006-HC.jpg','CFD-WM-033-006-HC.jpg','CFD-WM-022-003-HC.jpg','CFD-BM-002-013-N.jpg','CFD-BM-025-035-N.jpg','CFD-BM-030-003-N.jpg','CFD-WM-103_08.jpg','CFD-WM-128_08.jpg','CFD-WM-018_08.jpg','CFD-BM-114_03.jpg','CFD-E-067_03.jpg','CFD-A-037_03.jpg','CFD-WF-001-010-HC.jpg','CFD-WF-015-023-HC.jpg','CFD-WF-007-005-HC.jpg','CFD-BF-004-009-HO.jpg','CFD-BF-006-008-HC.jpg','CFD-BF-035-027-HO.jpg','CFD-BF-048-002-N.jpg','CFD-BF-031-002-N.jpg','CFD-WF-013_03.jpg']
-        
-        ids_fixed_cb2 = ['CFD-WM-034-035-HO.jpg','CFD-WM-026-006-HO.jpg','CFD-BM-010-004-HO.jpg','CFD-BM-039-029-N.jpg','CFD-BM-033-003-N.jpg','CFD-BM-023-029-N.jpg','CFD-WM-105_03.jpg','CFD-WM-041_03.jpg','CFD-WM-069_03.jpg','CFD-WF-009-006-HC.jpg','CFD-WF-024-010-HC.jpg','CFD-WF-022-007-HC.jpg','CFD-BF-037-022-N.jpg','CFD-BF-021-013-N.jpg','CFD-BF-047-003-N.jpg','CFD-WF-002_03.jpg','CFD-WF-112_03.jpg','CFD-WF-014_03.jpg','CFD-WF-083_08.jpg','CFD-BF-025_08.jpg','CFD-WF-122_08.jpg']
-    
+    ids_fixed_cb2 = ['CFD-WM-034-035-HO.jpg','CFD-WM-026-006-HO.jpg','CFD-BM-010-004-HO.jpg','CFD-BM-039-029-N.jpg','CFD-BM-033-003-N.jpg','CFD-BM-023-029-N.jpg','CFD-WM-105_03.jpg','CFD-WM-041_03.jpg','CFD-WM-069_03.jpg','CFD-WF-009-006-HC.jpg','CFD-WF-024-010-HC.jpg','CFD-WF-022-007-HC.jpg','CFD-BF-037-022-N.jpg','CFD-BF-021-013-N.jpg','CFD-BF-047-003-N.jpg','CFD-WF-002_03.jpg','CFD-WF-112_03.jpg','CFD-WF-014_03.jpg','CFD-WF-083_08.jpg','CFD-BF-025_08.jpg','CFD-WF-122_08.jpg']
+ 
     #Randomly choose cb1 or cb2 to be study faces (first half of perps list) and the other half to be "suspects" in target absent lineups
-        import random 
-        ids = ids_fixed_cb1+ids_fixed_cb2
-        cb = 'CB1'
-        if random.randint(0, 1) == 1: 
-            ids = ids_fixed_cb2 +ids_fixed_cb1 
-            cb = 'CB2'
+    import random 
+    ids = ids_fixed_cb1+ids_fixed_cb2
+    cb = 'CB1'
+    if random.randint(0, 1) == 1: 
+        ids = ids_fixed_cb2 +ids_fixed_cb1 
+        cb = 'CB2'
+            
+    num_lineups = len(ids)
 
-        #Get identity numbers for perps list (unfiortunately this code reorders the filenames so doesn't work well)
-        filtered_rows = face_descriptions[face_descriptions['Filename'].isin(ids)]   # Filter rows in the DataFrame where 'Filename' is in the list 'ids'
-        identity_nums_perps = filtered_rows['Identity'].tolist()   # Extract the 'Identity' values from the filtered rows
+    #Get identity numbers for perps list (unfortunately this code reorders the filenames so doesn't work well)
+    filtered_rows = face_descriptions[face_descriptions['Filename'].isin(ids)]   # Filter rows in the DataFrame where 'Filename' is in the list 'ids'
+    identity_nums_perps = filtered_rows['Identity'].tolist()   # Extract the 'Identity' values from the filtered rows
         
-        #The first half of the list will become perps / target present trials. So let's just rnadomise the list so a slightly different group ends up as perps each time.
-        import random
-        random.shuffle(identity_nums_perps) # Shuffle the list in place
-        
-        num_perps = len(ids)
-        
-    
+    #The first half of the list will become perps / target present trials. So let's just randomise the list so a slightly different group ends up as perps each time.
+    import random
+    random.shuffle(identity_nums_perps) # Shuffle the list in place
+
     #It's inelegent, but I'm going to do one loop for the perps first, so that I can
     #mark them all as used before I then do the paired faces in a second loop
     perps = []  #information about every perp
@@ -124,10 +84,10 @@ def get_oldnew_trials(face_descriptions,gender):
         }
     
     #Initialise dictionaries to hold dataframes for lineups
-    # lineups = {key: None for key in range(0, num_perps)}
+    # lineups = {key: None for key in range(0, num_lineups)}
     lineups = []
     
-    #Now use a loop to create the lineup targets and suspects (fir3st elements in each lineup dictionary key). This loop is a bit of a nightmare.
+    #Now use a loop to create the lineup targets and suspects (first elements in each lineup dictionary key). This loop is a bit of a nightmare.
     for count, identity in enumerate(identity_nums_perps):  # Iterate through identity nums of randomly-sampled perps
         
         #which expression should this paired be?
@@ -141,7 +101,7 @@ def get_oldnew_trials(face_descriptions,gender):
         #Which type of trial is this? Target present or absent?
         lineup_type = 'Target present'
         facetype = 'Perp'
-        if count > num_perps/2:
+        if count >= num_lineups/2:
             lineup_type = 'Target absent'
             facetype = 'Suspect'
         
@@ -211,10 +171,10 @@ def get_oldnew_trials(face_descriptions,gender):
     lineups = pd.concat(lineups)
 
 #Now get rid of the second half of perps, which are just the suspects, so later you can find distances of test faces to just these perps in face space
-    perps = perps.iloc[0:int(num_perps/2)]
+    perps = perps.iloc[0:int(num_lineups/2)]
     
     #double check all perps/suspects got assigned four fillers before proceeding
-    if lineups.shape[0] != num_perps*(num_fillers+1):
+    if lineups.shape[0] != num_lineups*(num_fillers+1):
         print('Lineup has too few fillers: ', lineups.shape[0])
     
     return perps, lineups
@@ -371,8 +331,8 @@ def get_trial_distances(face_descriptions, dat, gender):
     axs[0].set_xlabel('')  # Suppress x-axis label
     axs[0].legend(title='', fontsize=fontsize)  # Increase font size of legend title
     # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    axs[0].set_ylim(350, 1100)  # Set y-axis limits
-    axs[0].set_yticks(np.arange(400, 1001, 200))
+    # axs[0].set_ylim(350, 1100)  # Set y-axis limits
+    # axs[0].set_yticks(np.arange(400, 1001, 200))
 
     
     target_absent = distances_plot_data[distances_plot_data['Lineup type'] == 'Target absent']
@@ -383,8 +343,8 @@ def get_trial_distances(face_descriptions, dat, gender):
     axs[1].set_xlabel('')  # Suppress x-axis label
     axs[1].get_legend().remove()  # Suppress legend on the second plot
     # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    axs[1].set_ylim(350, 1100)  # Set y-axis limits
-    axs[1].set_yticks(np.arange(400, 1001, 200))
+    # axs[1].set_ylim(350, 1100)  # Set y-axis limits
+    # axs[1].set_yticks(np.arange(400, 1001, 200))
 
     
     # Set x-axis label font size
@@ -487,7 +447,8 @@ def get_face_descriptions_from_files():
 ############################
 def compute_and_plot_AUC(ROC_data_ss):
     
-    auc_diag = np.trapz([0, 1],[0, 1])
+    #for ROC_data_ss, we found the proportion of old responses at each criterion level. For each simulated participant 0 through 49, there are two lineup types, within which there's filler and perp / suspect and these are repeated for each of the three test caricature conditions. Then this cycle through participants is repeated for each criterion level.
+
     participants = ROC_data_ss['Simulated participant'].unique()
     car_levels = ROC_data_ss['Test caricature'].unique()
     car_levels = sorted(car_levels, reverse=True)  # Sort in reverse alphabetical order so the levels are plotted with same colours as distances plot
@@ -522,11 +483,19 @@ def compute_and_plot_AUC(ROC_data_ss):
             #Put a one on the end to ease AUV computation relative to chance
             # this_fas_data = pd.concat([this_fas_data, pd.Series([1])])
             
+            # # Determine the interval for integration
+            # max_x1 = np.max(x1)
+            # max_x2 = np.max(x2)
+            # max_x3 = np.max(x3)
+            # integration_limit = min(max_x1, max_x2, max_x3)
+
             new_row_data = {
                 'Simulated participant': participant,
                 'Test caricature': car_level,
                 'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data)   #careful, the argument for y comes first here!
             }
+            
+            #auc_diag = np.trapz([0, 1],[0, 1])
             
                 #'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data) - auc_diag   #careful, the argument for y comes first here!
 
@@ -612,14 +581,14 @@ def get_ROC_data(perps_distances):
         np.min(perps_distances['Nearest distance']),
         np.max(perps_distances['Nearest distance']), 
                 19)
-    criteria = np.append(criteria,np.Inf)    #Use a crazy high criterion value which will guarantee 100% hits and false alarms and will cause the ROC to automatically extend all the way to the top right corner and simpify AUC computations.
+    # criteria = np.append(criteria,np.Inf)    #Use a crazy high criterion value which will guarantee 100% hits and will cause the ROC to automatically extend all the way to the top right corner and simpify AUC computations.
     num_criteria = len(criteria)
     
     # Initialize empty lists to store data extracted for each criterion
     ROC_data_list = []
     ROC_data_ss_list = []
     
-    # Define a function to apply to each lineup group group
+    # Define a function to apply to each lineup
     def assign_old_responses(group):
     
         min_distance = group['Nearest distance'].min()  # Find the minimum distance in the group
@@ -655,6 +624,9 @@ def get_ROC_data(perps_distances):
         
         # Add 'criteria' column to mean_ci DataFrame
         mean_distances['Criterion'] = criteria[i]
+        
+        #I like toi be organised. This will make ROC_data_ss easier to read when it's encountered later in the program
+        mean_distances.sort_values(by=['Simulated participant', 'Lineup type', 'Test caricature', 'Face type'], inplace=True)
         
         # ... and assign it to list to be dataframed below
         ROC_data_ss_list.append(mean_distances)
@@ -695,63 +667,57 @@ def get_ROC_data(perps_distances):
 # %%
 #############################
 def plot_ROCs(ROC_data):
-        
-    # Plot ROC curves for different caricature levels
-    caricature_levels = ROC_data['Test caricature'].unique()
-    caricature_levels = sorted(caricature_levels, reverse=True)  # Sort in reverse alphabetical order so the levels are plotted with same colours as distances plot
+      
     
-    
- #   plt.figure(figsize=(10, 6))
+     plt.figure(figsize=(10, 6))
  
-    fig, axs = plt.subplots(1, 1, figsize=(8, 10))
+     fig, axs = plt.subplots(1, 1, figsize=(8, 10))
 
-
+     # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
+     colors = ['red','green','blue']
+     customPalette = sns.set_palette(sns.color_palette(colors))
     
-    # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
-    colors = ['red','green','blue']
-    customPalette = sns.set_palette(sns.color_palette(colors))
+     ordered_labels = ["Veridical", "Caricature", "Anticaricature"]
+     # plt.gca().set_prop_cycle(color=colors)
     
-    ordered_labels = ["Veridical", "Caricature", "Anticaricature"]
-    plt.gca().set_prop_cycle(color=colors)
-    
-    lines = []
-    # for level in caricature_levels:
-    for level, color in zip(ordered_labels,colors):
+     lines = []
+     # for level in caricature_levels:
+     for level, color in zip(ordered_labels,colors):
 
         
-        # Filter data for the current caricature level
-        data_level = ROC_data[ROC_data['Test caricature'] == level]
+         # Filter data for the current caricature level
+         data_level = ROC_data[ROC_data['Test caricature'] == level]
         
-        # Separate data for 'Hits' and 'False alarms'
-        match_data = data_level[data_level['Face type'] == 'Perp']
-        mismatch_data = data_level[data_level['Face type'] == 'Suspect']
+         # Separate data for 'Hits' and 'False alarms'
+         match_data = data_level[data_level['Face type'] == 'Perp']
+         mismatch_data = data_level[data_level['Face type'] == 'Suspect']
                 
-        # Plot ROC curve
-        lines.append(axs.plot(mismatch_data['mean'], match_data['mean'], label=level, color = color, marker='o', markerfacecolor = color, markersize = 10)[0])
+         # Plot ROC curve
+         lines.append(axs.plot(mismatch_data['mean'], match_data['mean'], label=level, color = color, marker='o', markerfacecolor = color, markersize = 10)[0])
         
-    # #     # Add shaded error area
-    #     axs.fill_between(mismatch_data['mean'], match_data['mean'] - match_data['CI'], match_data['mean'] + match_data['CI'], alpha=0.2)
+     # #     # Add shaded error area
+     #     axs.fill_between(mismatch_data['mean'], match_data['mean'] - match_data['CI'], match_data['mean'] + match_data['CI'], alpha=0.2)
         
-    # # Draw a diagonal line where x=y
-    axs.plot([0, 1], [0, 1], color='black', linewidth=2, label='Chance')
+     # # Draw a diagonal line where x=y
+     axs.plot([0, 1], [0, 1], color='black', linewidth=2, label='Chance')
     
-    fontsize = 22
-    # axs[0].set_title('Target present', fontsize=fontsize)
-    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
-    axs.set_xlabel('Cumulative false alarm rate')  # Suppress x-axis label
-    axs.set_ylabel('Cumulative hit rate')  # Suppress x-axis label
-    axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
-    # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    axs.set_ylim(-0.01, 1.01)  # Set y-axis limits
-    axs.set_xlim(-.01, 0.21)  # Set x-axis limits
+     fontsize = 22
+     # axs[0].set_title('Target present', fontsize=fontsize)
+     axs.tick_params(labelsize=fontsize)  # Increase tick label font size
+     axs.set_xlabel('Cumulative false alarm rate')  # Suppress x-axis label
+     axs.set_ylabel('Cumulative hit rate')  # Suppress x-axis label
+     axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
+     # Set y-axis ticks every 200 starting at 400 and finishing at 1000
+     axs.set_ylim(-0.01, 1.01)  # Set y-axis limits
+     axs.set_xlim(-.01, 0.21)  # Set x-axis limits
     
-    axs.set_xlabel(axs.get_xlabel(), fontsize=fontsize)
-    axs.set_ylabel(axs.get_ylabel(), fontsize=fontsize)
+     axs.set_xlabel(axs.get_xlabel(), fontsize=fontsize)
+     axs.set_ylabel(axs.get_ylabel(), fontsize=fontsize)
     
-    axs.grid(False)
+     axs.grid(False)
         
-    # Adjust layout
-    plt.tight_layout()
+     # Adjust layout
+     plt.tight_layout()
 #######################################  
 
 
@@ -848,19 +814,19 @@ filenames, face_descriptions = get_face_descriptions_from_files()
 
 
 #########Set up vgg16 model
-
 # from keras.applications import vgg16
 # from keras.models import Model
 # model = vgg16.VGG16(weights='imagenet', include_top=True)
 # model2 = Model(model.input, model.layers[-2].output)
-# from keras.applications.vgg16 import preprocess_input    #If Imagenet
+# from keras.applications.vgg16 import preprocess_input    
 
+#########Set up vggFACE model
 from keras_vggface.vggface import VGGFace
 model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
 from keras_vggface.utils import preprocess_input
 
 
-#########Proprocess images and project them into vgg16 space
+#########Proprocess images and project them into model space
 import keras.utils as image
 from keras.models import Model
 

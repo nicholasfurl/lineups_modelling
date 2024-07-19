@@ -732,29 +732,23 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 filenames, face_descriptions = get_face_descriptions_from_files()
 
 
-#########Set up vgg16 model
 
+#########Set up vgg16 model
 # from keras.applications import vgg16
 # from keras.models import Model
 # model = vgg16.VGG16(weights='imagenet', include_top=True)
 # model2 = Model(model.input, model.layers[-2].output)
+# from keras.applications.vgg16 import preprocess_input    
 
-# from keras_vggface.vggface import VGGFace
-# model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
-#VGGFace
+#########Set up vggFACE model
 from keras_vggface.vggface import VGGFace
 model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
 from keras_vggface.utils import preprocess_input
 
 
-
 #########Proprocess images and project them 
 import keras.utils as image
 from keras.models import Model
-
-# from keras.applications.vgg16 import preprocess_input    #If Imagenet
-# from keras_vggface.utils import preprocess_input
-
 
 dat = []
 imgs = []
