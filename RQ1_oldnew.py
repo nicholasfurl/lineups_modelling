@@ -243,8 +243,8 @@ def get_trial_distances(face_descriptions, dat, gender):
     from scipy.spatial.distance import pdist, squareform
     
     #Note, rows and cols of this matrix should lineup exactly with rows of face_descriptions and dat and the index numbers in perps and paired
-    # Ematrix = squareform(pdist(np.asarray(dat),'euclidean'))
-    Ematrix = squareform(pdist(np.asarray(dat),'cityblock'))
+    Ematrix = squareform(pdist(np.asarray(dat),'euclidean'))
+    # Ematrix = squareform(pdist(np.asarray(dat),'cityblock'))
 
     # #visualise the matrix
     # import seaborn as sns
@@ -323,34 +323,33 @@ def get_trial_distances(face_descriptions, dat, gender):
     # nearest_distances_df = pd.DataFrame.from_dict(nearest_distances, orient='index', columns=['Nearest Distance'])
     
     distances_plot_data = perps_distances.groupby(['Test caricature','Type', 'Simulated participant'])['Nearest distance'].mean().reset_index()
-
-    plt.figure(figsize=(4, 8))  # Adjust width and height as needed
     
-    # Modify font sizes using rcParams
-    plt.rcParams.update({
-        'font.size': 18,          # Base font size
-        'axes.labelsize': 18,     # Size of axis labels
-        'axes.titlesize': 18,     # Size of plot title
-        'legend.fontsize': 16,    # Size of legend text
-    })
+    ####THE DISTANCES PLOT!!!!!######
+    fontsize = 22
+    fig, axs = plt.subplots(1, 1, figsize=(6, 7))
     
-    colors = ["#4878CF", "#FFA500", "#6ACC65"]
+    colors = ['blue','red','green']
     customPalette = sns.set_palette(sns.color_palette(colors))
     
-    x_order = ['Old','New']
-    hue_order = ["Anticaricature", "Veridical","Caricature"]
+    hue_order = ["Anticaricature", "Veridical", "Caricature"]
+    order = ['Old', 'New']
+    
+    # # Create box plots with dodging
+    sns.boxplot(data=distances_plot_data, x='Type', y='Nearest distance', hue='Test caricature', order = order, hue_order = hue_order, dodge=True, boxprops=dict(alpha=.2),showfliers = False)
+    
+    sns.stripplot(ax=axs, x='Type', y='Nearest distance', hue='Test caricature', data=distances_plot_data, order = order, hue_order = hue_order, dodge=True, jitter=True )
 
-    # Plot the point spread plot of distances with each participant as a colored point
-    sns.stripplot(data=distances_plot_data, x='Type', y='Nearest distance', hue='Test caricature', dodge=True, jitter=True,order = x_order, hue_order = hue_order)
+    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
+    axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
+    axs.set_xlabel('Test face', fontsize=fontsize)
+    axs.set_ylabel('Distance to nearest study face', fontsize=fontsize)
+    plt.tight_layout()
     
-    # Create box plots with dodging
-    sns.boxplot(data=distances_plot_data, x='Type', y='Nearest distance', hue='Test caricature', dodge=True, boxprops=dict(alpha=.3), order = x_order, hue_order = hue_order, showfliers=False)
-    
-    handles, labels = plt.gca().get_legend_handles_labels()   # Get handles and labels for legend
-    
-    plt.legend(handles=handles[3:6], labels=labels[3:6], title = "Test caricature", loc='upper left',framealpha=0.5, bbox_to_anchor=(1.05, 1))
-    
-    #plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1))  
+    # Make the legend box background more transparent
+    handles, labels = axs.get_legend_handles_labels()
+    # legend = axs.legend(handles[0:3], labels[0:3], title='', fontsize=fontsize-2)
+    legend = axs.legend(handles[0:3], labels[0:3], title='', fontsize=fontsize-4, loc='upper left', bbox_to_anchor=(0, 1), framealpha=0.3)
+    legend.get_frame().set_alpha(0.3)
     
     plt.show()
     
@@ -441,10 +440,9 @@ def get_face_descriptions_from_files():
 ############################
 def compute_and_plot_AUC(ROC_data_ss):
     
-    auc_diag = np.trapz([0, 1],[0, 1])
+    # auc_diag = np.trapz([0, 1],[0, 1])
     participants = ROC_data_ss['Simulated participant'].unique()
-    car_levels = ROC_data_ss['Test caricature'].unique()
-    car_levels = sorted(car_levels, reverse=True)  # Sort in reverse alphabetical order so the levels are plotted with same colours as distances plot
+    car_levels = ["Anticaricature", "Veridical", "Caricature"]
 
     #Initialise dataframe to hold auc results
     AUC = {
@@ -473,34 +471,61 @@ def compute_and_plot_AUC(ROC_data_ss):
             new_row_data = {
                 'Simulated participant': participant,
                 'Test caricature': car_level,
-                'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data) - auc_diag   #careful, the argument for y comes first here!
+                'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data) #careful, the argument for y comes first here!
             }
             
             AUC = pd.concat([AUC,pd.DataFrame([new_row_data])], ignore_index=True)
             
-    plt.figure(figsize=(4, 8))  # Adjust width and height as needed
-    
-    caricature_order = [ 'Anticaricature', 'Veridical', 'Caricature']
-    colors = ["#4878CF", "#FFA500", "#6ACC65"]
+            
+    ####THE AUC PLOT!!!!!######
+    fontsize = 22
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6))
+            
+    colors = ['blue','red','green']
     customPalette = sns.set_palette(sns.color_palette(colors))
-         
+            
+    # Underlay the bar plot
+    sns.barplot(ax=axs, data=AUC, x='Test caricature', y='Area under the curve (AUC)', ci=None, palette=customPalette, alpha=0.3)
+ 
     # Plot the point spread plot of distances with each participant as a colored point
-    # sns.stripplot(data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue = "Test caricature", jitter=True, dodge = .2, order = caricature_order)
-    sns.stripplot(data=AUC, y = "Area under the curve (AUC)", x='Test caricature', hue='Test caricature', jitter=True, dodge=True, order = caricature_order, hue_order = caricature_order)
+    sns.stripplot(ax=axs,data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue = "Test caricature", jitter=True)
+    # sns.stripplot(ax=axs, x='Test caricature', y = "Area under the curve (AUC)",  hue='Test caricature', data=AUC, order = order, hue_order = hue_order, dodge=True, jitter=True)
+    
+    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
+    # axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
+    axs.set_xlabel('Test Caricature', fontsize=fontsize)
+    axs.set_ylabel('Discriminability (AUC)', fontsize=fontsize)
+    axs.set_ylim(0, 1.01)  # Set y-axis limits
+    axs.set_yticks([0,.2,.4,.6,.8,1])
+    
+    # Suppress the legend
+    axs.legend_.remove()
+    
+    # # Make the legend box background more transparent
+    # handles, labels = axs.get_legend_handles_labels()
+    # legend = axs.legend(handles[0:3], labels[0:3], title='', fontsize=fontsize)
+    # legend.get_frame().set_alpha(0.3)
+    
+    plt.tight_layout()
+    plt.show()  
+    
+    # axs[0].tick_params(labelsize=fontsize)  # Increase tick label font size
+    # axs[0].set_xlabel('')  # Suppress x-axis label
+    # axs[0].legend(title='', fontsize=fontsize)  # Increase font size of legend title
 
-    # Create box plots with dodging
-    # sns.boxplot(data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue='Test caricature', boxprops=dict(alpha=.3), dodge = True, order = caricature_order)
-    sns.boxplot(data=AUC, y = "Area under the curve (AUC)", x='Test caricature', hue='Test caricature', dodge=True, order = caricature_order, hue_order = caricature_order, showfliers=False, boxprops=dict(alpha=.3))
+    # # # Create box plots with dodging
+    # # # sns.boxplot(data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue='Test caricature', boxprops=dict(alpha=.3), dodge = True, order = caricature_order)
+    # # sns.boxplot(data=AUC, y = "Area under the curve (AUC)", x='Test caricature', hue='Test caricature', dodge=True, order = caricature_order, hue_order = caricature_order, showfliers=False, boxprops=dict(alpha=.3))
      
-    # plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1))  
-    plt.ylim(0, 0.55)     # Set y-axis limits
-    plt.xticks(rotation=45)  # Adjust rotation angle as needed
+    # # plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1))  
+    # plt.ylim(0, 0.55)     # Set y-axis limits
+    # plt.xticks(rotation=45)  # Adjust rotation angle as needed
     
-    handles, labels = plt.gca().get_legend_handles_labels()  
+    # handles, labels = plt.gca().get_legend_handles_labels()  
     
-    plt.legend(handles=handles[3:6], labels=labels[3:6], title = "Test caricature", loc='upper left',framealpha=0.5, bbox_to_anchor=(1.05, 1)) 
+    # plt.legend(handles=handles[3:6], labels=labels[3:6], title = "Test caricature", loc='upper left',framealpha=0.5, bbox_to_anchor=(1.05, 1)) 
 
-    plt.show()   
+     
     
     return AUC
         
@@ -566,75 +591,55 @@ def get_ROC_data(perps_distances):
 # %%
 #############################
 def plot_ROCs(ROC_data):
-        
-    # Plot ROC curves for different caricature levels
-    caricature_levels = ROC_data['Test caricature'].unique()
-    caricature_levels = sorted(caricature_levels, reverse=True)  # Sort in reverse alphabetical order so the levels are plotted with same colours as distances plot
+
+    fig, axs = plt.subplots(1, 1, figsize=(7, 7))
+
+    colors = ['blue', 'red', 'green']
+    customPalette = sns.set_palette(sns.color_palette(colors))
     
-    
-    plt.figure(figsize=(10, 6))
-    
-    # Modify font sizes using rcParams
-    plt.rcParams.update({
-        'font.size': 20,          # Base font size
-        'axes.labelsize': 20,     # Size of axis labels
-        'axes.titlesize': 20,     # Size of plot title
-        'legend.fontsize': 20,    # Size of legend text
-    })
-    
-    # colors = ["#4878CF", "#FFA500", "#6ACC65"]
-    # customPalette = sns.set_palette(sns.color_palette(colors))
-    
-    # order = ["Anticaricature", "Veridical", "Caricature"]
-    
-    
-    
-    plt.figure(figsize=(8, 8))  # Adjust width and height as needed
-    
-    colors = ['blue', 'green', 'orange']
     ordered_labels = ["Anticaricature", "Veridical", "Caricature"]
-    plt.gca().set_prop_cycle(color=colors)
+    # plt.gca().set_prop_cycle(color=colors)
     
     lines = []
     # for level in caricature_levels:
     for level, color in zip(ordered_labels,colors):
 
-        
         # Filter data for the current caricature level
         data_level = ROC_data[ROC_data['Test caricature'] == level]
         
         # Separate data for 'Match' and 'Mismatch'
         match_data = data_level[data_level['Type'] == 'Old']
         mismatch_data = data_level[data_level['Type'] == 'New']
-                
+        
         # Plot ROC curve
-        lines.append(plt.plot(mismatch_data['mean'], match_data['mean'], label=level, color = color)[0])
+        lines.append(axs.plot(mismatch_data['mean'], match_data['mean'], label=level, color = color, marker='o', markerfacecolor = color, markersize = 10)[0])
         
-        # Add shaded error area
-        plt.fill_between(mismatch_data['mean'], match_data['mean'] - match_data['CI'], match_data['mean'] + match_data['CI'], alpha=0.3)
-    
-        
-    
-    # Add labels and legend
-    plt.xlabel('False alarm rate')
-    plt.ylabel('Hit rate')
-    # plt.title('oldnew task')
-    plt.legend(title='Test caricature')
-    # plt.grid(True)
-    
-    # ordered_labels = ["Anticaricature", "Veridical", "Caricature"]
-    # ordered_lines = [lines[ordered_labels.index(label)] for label in ordered_labels]
-    # plt.legend(ordered_lines, ordered_labels)
-    
-    
-    # # Get current handles and labels
-    # handles, labels = ax.get_legend_handles_labels()
-    # ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
-    # plt.legend(ordered_handles, ordered_labels)
-
-    
     # Draw a diagonal line where x=y
-    plt.plot([0, 1], [0, 1], color='black', linestyle='--')
+    axs.plot([0, 1], [0, 1], color='black', linewidth=2, label='Chance', linestyle='--')
+        
+    fontsize = 22
+    # axs[0].set_title('Target present', fontsize=fontsize)
+    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
+    axs.set_xlabel('Cumulative false alarm rate')  # Suppress x-axis label
+    axs.set_ylabel('Cumulative hit rate')  # Suppress x-axis label
+    axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
+    axs.set_ylim(-0.05, 1.05)  # Set y-axis limits
+    axs.set_xlim(-0.05, 1.05)  # Set x-axis limits
+    
+    # Set ticks every 0.2 units
+    axs.set_xticks(np.arange(0, 1.1, 0.2))
+    axs.set_yticks(np.arange(0, 1.1, 0.2))
+   
+    axs.set_xlabel(axs.get_xlabel(), fontsize=fontsize)
+    axs.set_ylabel(axs.get_ylabel(), fontsize=fontsize)
+    
+    # Force the axis to be square
+    axs.set_aspect('equal', 'box')
+   
+    axs.grid(False)
+       
+    # Adjust layout
+    plt.tight_layout()
     
     plt.show()
 #######################################  
@@ -734,21 +739,20 @@ filenames, face_descriptions = get_face_descriptions_from_files()
 
 
 #########Set up vgg16 model
-# from keras.applications import vgg16
-# from keras.models import Model
-# model = vgg16.VGG16(weights='imagenet', include_top=True)
-# model2 = Model(model.input, model.layers[-2].output)
-# from keras.applications.vgg16 import preprocess_input    
+from keras.applications import vgg16
+from keras.models import Model
+model = vgg16.VGG16(weights='imagenet', include_top=True)
+model2 = Model(model.input, model.layers[-2].output)
+from keras.applications.vgg16 import preprocess_input    
 
 #########Set up vggFACE model
-from keras_vggface.vggface import VGGFace
-model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
-from keras_vggface.utils import preprocess_input
+# from keras_vggface.vggface import VGGFace
+# model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
+# from keras_vggface.utils import preprocess_input
 
 
 #########Proprocess images and project them 
 import keras.utils as image
-from keras.models import Model
 
 dat = []
 imgs = []
@@ -774,11 +778,9 @@ for count, imgf in enumerate(filenames):    #CAREFUL! I used the original variab
 # tsne_and_pca(dat,face_descriptions)
 
 #Get distances in space for the trials and plot them by caricature
-# perps_distances = get_trial_distances(face_descriptions, dat, gender = "All")
-# perps_distances = get_trial_distances(face_descriptions, dat, gender = "Man")
 Ematrix, perps_distances = get_trial_distances(face_descriptions, dat, gender = "All")
 
-plot_distances_by_car_level(Ematrix, face_descriptions)
+#plot_distances_by_car_level(Ematrix, face_descriptions)
 
 #Compute cumulative hits and false alarms
 ROC_data_ss, ROC_data = get_ROC_data(perps_distances)

@@ -103,7 +103,7 @@ def get_oldnew_trials(face_descriptions,gender):
         facetype = 'Perp'
         if count >= num_lineups/2:
             lineup_type = 'Target absent'
-            facetype = 'Suspect'
+            facetype = 'Innocent suspect'
         
         #First put perp / suspect test face in first row of lineup
         
@@ -266,8 +266,8 @@ def get_trial_distances(face_descriptions, dat, gender):
     from scipy.spatial.distance import pdist, squareform
     
     #Note, rows and cols of this matrix should lineup exactly with rows of face_descriptions and dat and the index numbers in perps and paired
-    # Ematrix = squareform(pdist(np.asarray(dat),'euclidean'))
-    Ematrix = squareform(pdist(np.asarray(dat),'cityblock'))
+    Ematrix = squareform(pdist(np.asarray(dat),'euclidean'))
+    # Ematrix = squareform(pdist(np.asarray(dat),'cityblock'))
     
     perps_distances = []    #empty list to accumulate all the pairs
 
@@ -312,51 +312,72 @@ def get_trial_distances(face_descriptions, dat, gender):
 
 
     ####THE DISTANCES PLOT!!!!!######
-    fontsize = 20
-    fig, axs = plt.subplots(1, 1, figsize=(8, 10))
+    fontsize = 22
+    fig, axs = plt.subplots(1, 1, figsize=(6, 7))
     
     # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
-    colors = ['red','green','blue']
+    colors = ['blue','red','green']
     customPalette = sns.set_palette(sns.color_palette(colors))
     
     hue_order = ["Anticaricature", "Veridical", "Caricature"]
+    order = ['Perp', 'Innocent suspect']
     
     # Filter DataFrame for Target present rows and create the strip plot
-    target_present = distances_plot_data[(distances_plot_data['Face type'] == 'Perp') | (distances_plot_data['Face type'] == 'Suspect')]
+    target_present = distances_plot_data[(distances_plot_data['Face type'] == 'Perp') | (distances_plot_data['Face type'] == 'Innocent suspect')]
     # target_present = distances_plot_data[distances_plot_data['Lineup type'] == 'Target present']
-    sns.stripplot(ax=axs[0], x='Face type', y='Nearest distance', hue='Test caricature', data=target_present,
+    
+    #Create box plots with dodging
+    sns.boxplot(ax=axs,data=target_present, x='Face type', y='Nearest distance', hue='Test caricature', order = order, hue_order = hue_order, dodge=True, boxprops=dict(alpha=.2),showfliers = False)
+    
+    sns.stripplot(ax=axs, x='Face type', y='Nearest distance', hue='Test caricature', data=target_present, order = order,
                   hue_order=hue_order, dodge=True, jitter=True)
-    axs[0].set_title('Target present', fontsize=fontsize)
-    axs[0].tick_params(labelsize=fontsize)  # Increase tick label font size
-    axs[0].set_xlabel('')  # Suppress x-axis label
-    axs[0].legend(title='', fontsize=fontsize)  # Increase font size of legend title
-    # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    # axs[0].set_ylim(350, 1100)  # Set y-axis limits
-    # axs[0].set_yticks(np.arange(400, 1001, 200))
-
     
-    # target_absent = distances_plot_data[distances_plot_data['Lineup type'] == 'Target absent']
-    # sns.stripplot(ax=axs[1], x='Face type', y='Nearest distance', hue='Test caricature', data=target_absent,
-    #               hue_order=hue_order, dodge=True, jitter=True)
-    # axs[1].set_title('Target absent',fontsize=fontsize)
-    # axs[1].tick_params(labelsize=fontsize)  # Increase tick label font size
-    # axs[1].set_xlabel('')  # Suppress x-axis label
-    # axs[1].get_legend().remove()  # Suppress legend on the second plot
-    # # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    # # axs[1].set_ylim(350, 1100)  # Set y-axis limits
-    # # axs[1].set_yticks(np.arange(400, 1001, 200))
-
     
-    # Set x-axis label font size
-    for ax in axs:
-        ax.set_xlabel(ax.get_xlabel(), fontsize=fontsize)
-    
-    # Set y-axis label font size
-    for ax in axs:
-        ax.set_ylabel(ax.get_ylabel(), fontsize=fontsize)
-        
-    # Adjust layout
+    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
+    axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
+    axs.set_xlabel('Test face', fontsize=fontsize)
+    axs.set_ylabel('Distance to nearest perp face', fontsize=fontsize)
     plt.tight_layout()
+    
+    # Make the legend box background more transparent
+    handles, labels = axs.get_legend_handles_labels()
+    # legend = axs.legend(handles[0:3], labels[0:3], title='', fontsize=fontsize-2)
+    legend = axs.legend(handles[0:3], labels[0:3], title='', fontsize=fontsize-4, loc='upper left', bbox_to_anchor=(0, 1), framealpha=0.3)
+    legend.get_frame().set_alpha(0.3)
+    
+    plt.show()
+    
+    # # axs[0].set_title('Target present', fontsize=fontsize)
+    # axs[0].tick_params(labelsize=fontsize)  # Increase tick label font size
+    # axs[0].set_xlabel('')  # Suppress x-axis label
+    # axs[0].legend(title='', fontsize=fontsize)  # Increase font size of legend title
+    # # Set y-axis ticks every 200 starting at 400 and finishing at 1000
+    # # axs[0].set_ylim(350, 1100)  # Set y-axis limits
+    # # axs[0].set_yticks(np.arange(400, 1001, 200))
+
+    
+    # # target_absent = distances_plot_data[distances_plot_data['Lineup type'] == 'Target absent']
+    # # sns.stripplot(ax=axs[1], x='Face type', y='Nearest distance', hue='Test caricature', data=target_absent,
+    # #               hue_order=hue_order, dodge=True, jitter=True)
+    # # axs[1].set_title('Target absent',fontsize=fontsize)
+    # # axs[1].tick_params(labelsize=fontsize)  # Increase tick label font size
+    # # axs[1].set_xlabel('')  # Suppress x-axis label
+    # # axs[1].get_legend().remove()  # Suppress legend on the second plot
+    # # # Set y-axis ticks every 200 starting at 400 and finishing at 1000
+    # # # axs[1].set_ylim(350, 1100)  # Set y-axis limits
+    # # # axs[1].set_yticks(np.arange(400, 1001, 200))
+
+    
+    # # Set x-axis label font size
+    # for ax in axs:
+    #     ax.set_xlabel(ax.get_xlabel(), fontsize=fontsize)
+    
+    # # Set y-axis label font size
+    # for ax in axs:
+    #     ax.set_ylabel(ax.get_ylabel(), fontsize=fontsize)
+        
+    # # Adjust layout
+    # plt.tight_layout()
         
 
     
@@ -445,127 +466,75 @@ def get_face_descriptions_from_files():
 
 # %%
 ############################
-def compute_and_plot_AUC(ROC_data_ss):
+def compute_and_plot_AUC(ROC_data):
     
-    #for ROC_data_ss, we found the proportion of old responses at each criterion level. For each simulated participant 0 through 49, there are two lineup types, within which there's filler and perp / suspect and these are repeated for each of the three test caricature conditions. Then this cycle through participants is repeated for each criterion level.
-
-    participants = ROC_data_ss['Simulated participant'].unique()
-    car_levels = ROC_data_ss['Test caricature'].unique()
-    car_levels = sorted(car_levels, reverse=True)  # Sort in reverse alphabetical order so the levels are plotted with same colours as distances plot
-
-    #Initialise dataframe to hold auc results
-    AUC = {
-        'Simulated participant': [],
-        'Test caricature': [],
-        'Area under the curve (AUC)': []
-    }
-    AUC = pd.DataFrame(AUC)
-      
-    for participant in participants:
+    #I am revising this one to compute the AUCs at the group level only, so that I can efficiently do a partial interval based on the smallest asymptotic false alarm rate. This will be the case for lineups because false alarms can't exceed 1/num options but I can run this for matching and old/new
+    
+    # Filter the data by 'Face type' and 'Test caricature'
+    conditions = ['Anticaricature', 'Veridical', 'Caricature']
+    face_types = ['Perp', 'Innocent suspect']
+    
         
-        for car_level in car_levels:
+    # Compute the maximum false alarm rates for each condition
+    max_fas = {}
+    for condition in conditions:
+        max_fas[condition] = ROC_data[(ROC_data['Test caricature'] == condition) & (ROC_data['Face type'] == 'Innocent suspect')]['mean'].max()
+    
+    # Determine the integration limit
+    limit = min(max_fas.values())
+
+    partial_aucs = {}
+    for condition in conditions:
         
-            this_hits_data = ROC_data_ss[
-                (ROC_data_ss['Simulated participant'] == participant) & 
-                (ROC_data_ss['Face type'] == "Perp") &
-                (ROC_data_ss['Test caricature'] == car_level)
-                ]["Old responses"]
-            
-            #Put a one on the end to ease AUV computation relative to chance
-            # this_hits_data = pd.concat([this_hits_data, pd.Series([1])])
-            
-            this_fas_data = ROC_data_ss[
-                (ROC_data_ss['Simulated participant'] == participant) & 
-                (ROC_data_ss['Face type'] == "Suspect") &
-                (ROC_data_ss['Test caricature'] == car_level)
-                ]["Old responses"]
-            
-            #Put a one on the end to ease AUV computation relative to chance
-            # this_fas_data = pd.concat([this_fas_data, pd.Series([1])])
-            
-            # # Determine the interval for integration
-            # max_x1 = np.max(x1)
-            # max_x2 = np.max(x2)
-            # max_x3 = np.max(x3)
-            # integration_limit = min(max_x1, max_x2, max_x3)
+        data = ROC_data[ROC_data['Test caricature'] == condition]
+        
+        fa_data = data[data['Face type'] == 'Innocent suspect']
+        hit_data = data[data['Face type'] == 'Perp']
 
-            new_row_data = {
-                'Simulated participant': participant,
-                'Test caricature': car_level,
-                'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data)   #careful, the argument for y comes first here!
-            }
-            
-            #auc_diag = np.trapz([0, 1],[0, 1])
-            
-                #'Area under the curve (AUC)': np.trapz(this_hits_data,this_fas_data) - auc_diag   #careful, the argument for y comes first here!
+        # Ensure data are sorted by criterion
+        fa_data = fa_data.sort_values(by='Criterion')
+        hit_data = hit_data.sort_values(by='Criterion')
+        
+        # Truncate the false alarm data at the integration limit
+        fa_truncated = fa_data[fa_data['mean'] <= limit]
+        hit_truncated = hit_data[hit_data['Criterion'].isin(fa_truncated['Criterion'])]
+    
+        # Ensure both arrays have the same length
+        fa_truncated = fa_truncated.head(len(hit_truncated))
+        hit_truncated = hit_truncated.head(len(fa_truncated))
+        
+        # Interpolate missing points (optional, but recommended for sparse data)
+        new_fas = np.linspace(0.001, limit, num=100)  # Common x-axis for interpolation
+        
+        from scipy.interpolate import interp1d
+        
+        f1 = interp1d(fa_truncated['mean'], hit_truncated['mean'], kind='linear', fill_value="extrapolate")
+        hit_interp = f1(new_fas)
+        
+                
+        # Compute the area using the trapezoidal rule
+        partial_aucs[condition] = np.trapz(hit_interp, new_fas)
+        
+        
 
-            
-            AUC = pd.concat([AUC,pd.DataFrame([new_row_data])], ignore_index=True)
-            
-    # plt.figure(figsize=(4, 8))  # Adjust width and height as needed
-    
-    # caricature_order = [ 'Anticaricature', 'Veridical', 'Caricature']
-    # colors = ["#4878CF", "#FFA500", "#6ACC65"]
-    # customPalette = sns.set_palette(sns.color_palette(colors))
-    
+    # Create a bar plot of the AUC values
     fontsize = 22
-    fig, axs = plt.subplots(1, 1, figsize=(8.7, 8.5))
+    plt.figure(figsize=(8, 6))
     
-    # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
-    colors = ['red','green','blue']
-    customPalette = sns.set_palette(sns.color_palette(colors))
+    colors = ['blue','red','green']
     
-    hue_order = ["Veridical", "Caricature", "Anticaricature"]
-         
-    # Plot the point spread plot of distances with each participant as a colored point
-    # sns.stripplot(data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue = "Test caricature", jitter=True, dodge = .2, order = caricature_order)
-    sns.stripplot(ax=axs, data=AUC, y = "Area under the curve (AUC)", x='Test caricature', hue='Test caricature', jitter=True, dodge=True, order = hue_order, hue_order = hue_order)
+    plt.bar(partial_aucs.keys(), partial_aucs.values(), color = colors, alpha = .3)
 
-    # Create box plots with dodging
-    # sns.boxplot(data=AUC, x='Test caricature', y='Area under the curve (AUC)', hue='Test caricature', boxprops=dict(alpha=.3), dodge = True, order = caricature_order)
-    sns.boxplot(ax=axs, data=AUC, y = "Area under the curve (AUC)", x='Test caricature', hue='Test caricature', dodge=True, order = hue_order, hue_order = hue_order, showfliers=False, boxprops=dict(alpha=.3))
+    plt.xlabel('Test caricature', fontsize=fontsize)
+    plt.ylabel('Discriminability (Partial AUC)', fontsize=fontsize)
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
     
-    fontsize = 26
-    axs.set_xlabel(axs.get_xlabel(), fontsize=fontsize)
-    axs.set_ylabel(axs.get_ylabel(), fontsize=fontsize)
-    axs.tick_params(labelsize=fontsize)  # Increase tick label font size
-    axs.set_xlabel('Test caricature')
+    plt.show()
     
+    return partial_aucs
     
-    # Get handles and labels for the legend
-    handles, labels = axs.get_legend_handles_labels()
-    
-    # Set legend labels for strip plots to None
-    strip_handles = handles[:3]
-    strip_labels = [None] * 3
-    
-    # Set legend labels for box plots
-    box_handles = handles[3:]
-    box_labels = labels[3:]
-    
-    # Plot legend with only box plot entries
-    axs.legend(box_handles, box_labels, framealpha=0.2)
-    
-    
-    # handles, labels = plt.gca().get_legend_handles_labels() 
-    # axs.legend(title='', labels=labels[0:4], fontsize=fontsize, loc='upper left',framealpha=0.5, bbox_to_anchor=(1.05, 1))  
-      
-    # axs.set_xticklabels(rotation=45)  # Adjust rotation angle as needed
-   # , 
-    
-    # plt.tight_layout()
-    
-    # Set y-axis ticks every 200 starting at 400 and finishing at 1000
-    # axs.set_ylim(350, 1100)  # Set y-axis limits
-    # axs.set_yticks(np.arange(400, 1001, 200))
-    # axs.set_title('Target present', fontsize=fontsize)
 
-    # plt.ylim(0, 0.55)     # Set y-axis limits
-    # handles, labels = plt.gca().get_legend_handles_labels()  
-    # plt.legend(handles=handles[3:6], labels=labels[3:6], title = "Test caricature", loc='upper left',framealpha=0.5, bbox_to_anchor=(1.05, 1)) 
- 
-    
-    return AUC
         
 
 
@@ -668,29 +637,26 @@ def get_ROC_data(perps_distances):
 #############################
 def plot_ROCs(ROC_data):
       
-    
-     plt.figure(figsize=(10, 6))
  
-     fig, axs = plt.subplots(1, 1, figsize=(8, 10))
+     fig, axs = plt.subplots(1, 1, figsize=(7, 7))
 
      # colors = ["#4878CF", "#6ACC65", "#FFA500" ]
-     colors = ['red','green','blue']
+     colors = ['blue','red','green']
      customPalette = sns.set_palette(sns.color_palette(colors))
     
-     ordered_labels = ["Veridical", "Caricature", "Anticaricature"]
+     ordered_labels = ["Anticaricature", "Veridical", "Caricature"]
      # plt.gca().set_prop_cycle(color=colors)
     
      lines = []
      # for level in caricature_levels:
      for level, color in zip(ordered_labels,colors):
 
-        
          # Filter data for the current caricature level
          data_level = ROC_data[ROC_data['Test caricature'] == level]
         
          # Separate data for 'Hits' and 'False alarms'
          match_data = data_level[data_level['Face type'] == 'Perp']
-         mismatch_data = data_level[data_level['Face type'] == 'Suspect']
+         mismatch_data = data_level[data_level['Face type'] == 'Innocent suspect']
                 
          # Plot ROC curve
          lines.append(axs.plot(mismatch_data['mean'], match_data['mean'], label=level, color = color, marker='o', markerfacecolor = color, markersize = 10)[0])
@@ -698,8 +664,8 @@ def plot_ROCs(ROC_data):
      # #     # Add shaded error area
      #     axs.fill_between(mismatch_data['mean'], match_data['mean'] - match_data['CI'], match_data['mean'] + match_data['CI'], alpha=0.2)
         
-     # # Draw a diagonal line where x=y
-     axs.plot([0, 1], [0, 1], color='black', linewidth=2, label='Chance')
+     # Draw a diagonal line where x=y
+     axs.plot([0, 1], [0, 1], color='black', linewidth=2, label='Chance', linestyle='--')
     
      fontsize = 22
      # axs[0].set_title('Target present', fontsize=fontsize)
@@ -707,17 +673,27 @@ def plot_ROCs(ROC_data):
      axs.set_xlabel('Cumulative false alarm rate')  # Suppress x-axis label
      axs.set_ylabel('Cumulative hit rate')  # Suppress x-axis label
      axs.legend(title='', fontsize=fontsize)  # Increase font size of legend title
-     # Set y-axis ticks every 200 starting at 400 and finishing at 1000
+
+     # Set ticks every 0.2 units
+     axs.set_xticks(np.arange(0, 1.1, 0.05))
+     axs.set_yticks(np.arange(0, 1.1, 0.2))
+     
      axs.set_ylim(-0.01, 1.01)  # Set y-axis limits
+     # axs.set_xlim(-0.01, 1.01)  # Set x-axis limits
      axs.set_xlim(-.01, 0.21)  # Set x-axis limits
     
      axs.set_xlabel(axs.get_xlabel(), fontsize=fontsize)
      axs.set_ylabel(axs.get_ylabel(), fontsize=fontsize)
+     
+     # # Force the axis to be square
+     # axs.set_aspect('equal', 'box')
     
      axs.grid(False)
         
      # Adjust layout
      plt.tight_layout()
+     
+     plt.show()
 #######################################  
 
 
@@ -787,8 +763,6 @@ def plot_distances_by_car_level(Ematrix, face_descriptions):
 #######################################
 
 
-
-
   
 
 # %%
@@ -814,21 +788,20 @@ filenames, face_descriptions = get_face_descriptions_from_files()
 
 
 #########Set up vgg16 model
-from keras.applications import vgg16
-from keras.models import Model
-model = vgg16.VGG16(weights='imagenet', include_top=True)
-model2 = Model(model.input, model.layers[-2].output)
-from keras.applications.vgg16 import preprocess_input    
+# from keras.applications import vgg16
+# from keras.models import Model
+# model = vgg16.VGG16(weights='imagenet', include_top=True)
+# model2 = Model(model.input, model.layers[-2].output)
+# from keras.applications.vgg16 import preprocess_input    
 
 #########Set up vggFACE model
-# from keras_vggface.vggface import VGGFace
-# model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
-# from keras_vggface.utils import preprocess_input
+from keras_vggface.vggface import VGGFace
+model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
+from keras_vggface.utils import preprocess_input
 
 
 #########Proprocess images and project them into model space
 import keras.utils as image
-from keras.models import Model
 
 dat = []
 imgs = []
@@ -854,18 +827,16 @@ for count, imgf in enumerate(filenames):    #CAREFUL! I used the original variab
 # tsne_and_pca(dat,face_descriptions)
 
 #Get distances in space for the trials and plot them by caricature
-# perps_distances = get_trial_distances(face_descriptions, dat, gender = "All")
-# perps_distances = get_trial_distances(face_descriptions, dat, gender = "Man")
 Ematrix, perps_distances = get_trial_distances(face_descriptions, dat, gender = "None")
 
-plot_distances_by_car_level(Ematrix, face_descriptions)
+#plot_distances_by_car_level(Ematrix, face_descriptions)
 
 #Compute cumulative hits and false alarms
 ROC_data_ss, ROC_data = get_ROC_data(perps_distances)
 
 plot_ROCs(ROC_data)
 
-AUC_data = compute_and_plot_AUC(ROC_data_ss)
+AUC_data = compute_and_plot_AUC(ROC_data)
 
     
 
