@@ -234,39 +234,29 @@ def get_all_files():
 # %%
 ###############################
 def get_model_space(face_descriptions):
+
+
+    # #########Set up vgg16 model
+    # from keras.applications import vgg16
+    # from keras.models import Model
+    # model = vgg16.VGG16(weights='imagenet', include_top=True)
+    # model2 = Model(model.input, model.layers[-2].output)
+    # from keras.applications.vgg16 import preprocess_input    
     
-    # #Set up vgg16 model
-    from keras.applications import vgg16
-    from keras.models import Model
-    
-    model = vgg16.VGG16(weights='imagenet', include_top=True)
-    model2 = Model(model.input, model.layers[-2].output)
- 
-    
- 
-    # ###vgg face2####
-    # ###############
-    # from keras_vggface.vggface import VGGFace
-     
-    # # # Convolution Features
-    # # model2 = VGGFace(model='resnet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
-    
-    # # Convolution Features
+    #########Set up vggFACE model
+    from keras_vggface.vggface import VGGFace
+    model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
+    # model2 = VGGFace(model='resnet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
     # model2 = VGGFace(model='senet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
-    # ################
+    from keras_vggface.utils import preprocess_input
     
     
-    
-    
-    #########Proprocess images and project them into vgg16 space
+    #########Proprocess images and project them 
     import keras.utils as image
-    from keras.models import Model
+
     
-    ### use for vggFACE
-    from keras.applications.vgg16 import preprocess_input
     
-    # #### use for vggFACE2 ######
-    # from keras_vggface.utils import preprocess_input
+    
     
     dat = []
     imgs = []

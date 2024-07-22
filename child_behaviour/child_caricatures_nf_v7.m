@@ -111,7 +111,9 @@ out_data_mm = [];   %mixed model (with trial data)
 conf_accu_slope_data = [];
 conf_accu_slope_data_it = 1;
 
-for group = 1:num_groups;    %either expert groups or CFMT+ groups, depends on group_setting above
+% for group = 1:num_groups;    %either expert groups or CFMT+ groups, depends on group_setting above
+for group = 2;    %either expert groups or CFMT+ groups, depends on group_setting above
+
     
     clear data old_data *hits* *fas* this* *c_* *ss* *auc* *dp_*
     %
@@ -521,24 +523,29 @@ for group = 1:num_groups;    %either expert groups or CFMT+ groups, depends on g
     %now make ROC plot
     figure(h6);
     
-    if groups_in_cols == 1;
-        subplot(1,3,group);
-    else
-        subplot(3,1,group);
-    end;
+%     if groups_in_cols == 1;
+%         subplot(1,3,group);
+%     else
+%         subplot(3,1,group);
+%     end;
     
-    plot([0 1],[0 1],'Color',[0 0 0],'LineWidth',2); hold on;
+    plot([0 1],[0 1],'Color',[0 0 0],'DisplayName','Chance','LineWidth',1); hold on;
     %     xlim([0 max(max(fas_car))]); ylim([0 max(max(hits_car_s))]);
-    xlim([0 .65]); ylim([0 .85]);
+    xlim([0 .65]); ylim([0 1]);
     set(gca,'FontSize',12,'FontName','Arial');
     ylabel('Cumulative hit rate');
     xlabel('Cumulative false alarm rate');
     box off;
     %(0=car-car, 1=car-anticar, 2=anticar,car, 3=anticar-anticar)
-    plot(fas_car(2,:)', hits_car_s(4,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle',':','LineWidth',4,'MarkerSize',4);
-    plot(fas_car(1,:)', hits_car_s(3,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle',':','LineWidth',4,'MarkerSize',4);
-    plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3);
-    plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3);
+    plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study Anticaricature,\nTest anticaricature'));
+    plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study Anticaricature,\nTest caricature'));
+    plot(fas_car(1,:)', hits_car_s(3,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study Caricature,\nTest anticaricature'));
+    plot(fas_car(2,:)', hits_car_s(4,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study Caricature,\nTest caricature'));
+
+%     plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', 'Study Anticaricature, Test anticaricature');
+%     plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName','Study Anticaricature, Test caricature');
+%     plot(fas_car(1,:)', hits_car_s(3,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', 'Study Caricature, Test anticaricature');
+%     plot(fas_car(2,:)', hits_car_s(4,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', 'Study Caricature, Test caricature');
 
     % shadedErrorBar hits_car_s', fas_car')
     
@@ -589,11 +596,19 @@ for group = 1:num_groups;    %either expert groups or CFMT+ groups, depends on g
         %         auc_s(sub,4) = trapz(this_fas_1,this_hits_3_s) - auc_diag_s;
         
     end;    %loop through subs to compute AUC
-    if group == num_groups;
+    if group == 2;
 %         legend chance C-C C-A A-C A-A; legend boxoff;
-        legend chance A-A A-C C-A C-C; legend boxoff;
+%         legend chance A-A A-C C-A C-C; legend boxoff;
+%         legend "chance" "Anticaricature-Anti" "A-C" "C-A" "C-C"; legend boxoff;
+    legend('show');
+
+    lgd = legend;
+    set(lgd, 'Color', 'none');
+
 
     end;
+
+    axis square
     
     
     %make auc plot
@@ -640,7 +655,7 @@ for group = 1:num_groups;    %either expert groups or CFMT+ groups, depends on g
     %     ylim([min(min(auc_s)) max(max(auc_s))]);
 %     ylim([.2 1]);
     set(gca,'FontSize',12,'FontName','Arial','XTick',[1.5 3.5],'YTick',[0:.2:1], 'XTickLabel',{'Anticaricature' 'Caricature' });
-    ylabel('Area under ROC (AUC)');
+    ylabel('Area under the curve (AUC)');
     xlabel('Study caricature');
     box off;
     
