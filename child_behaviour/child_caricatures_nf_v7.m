@@ -492,9 +492,9 @@ for group = 2;    %either expert groups or CFMT+ groups, depends on group_settin
         
         %now repeat average, but separately for only car levels this time
         %when you grab confidence interval, though, it is guaranteed to be over subjects, which you need
-        [hits_car_s(:,i) hits_car_ci_temp_s] = grpstats( hits_ss_temp_s(:,i), ...
+        [hits_car_s(:,i) hits_car_ci_temp_s test_hits_gnames] = grpstats( hits_ss_temp_s(:,i), ...
             [ hits_grps_temp_s ], ...
-            {'mean' 'meanci'});
+            {'mean' 'meanci' 'gname'});
         %     hits_car_ci_s(:,i) = hits_car_s(:,i) - hits_car_ci_temp_s(:,1);
         
         %false alarms
@@ -511,9 +511,9 @@ for group = 2;    %either expert groups or CFMT+ groups, depends on group_settin
         
         %now repeat average, but separately for only car levels this time
         %when you grab confidence interval, though, it is guaranteed to be over subjects, which you need
-        [fas_car(:,i) fas_car_ci_temp] = grpstats( fas_ss_temp(:,i), ...
+        [fas_car(:,i) fas_car_ci_temp test_fas_gnames] = grpstats( fas_ss_temp(:,i), ...
             [ fas_grps_temp ], ...
-            {'mean' 'meanci'});
+            {'mean' 'meanci' 'gname'});
         %     fas_car_ci(:,i) = fas_car(:,i) - fas_car_ci_temp(:,1);
         
     end;   %loop through confidence levels
@@ -537,10 +537,10 @@ for group = 2;    %either expert groups or CFMT+ groups, depends on group_settin
     xlabel('Cumulative false alarm rate');
     box off;
     %(0=car-car, 1=car-anticar, 2=anticar,car, 3=anticar-anticar)
-    plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study Anticaricature,\nTest anticaricature'));
-    plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study Anticaricature,\nTest caricature'));
-    plot(fas_car(1,:)', hits_car_s(3,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study Caricature,\nTest anticaricature'));
-    plot(fas_car(2,:)', hits_car_s(4,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study Caricature,\nTest caricature'));
+    plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study caricature,\nTest caricature'));
+    plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', sprintf('Study caricature,\nTest anticaricature'));
+    plot(fas_car(1,:)', hits_car_s(3,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study anticaricature,\nTest caricature'));
+    plot(fas_car(2,:)', hits_car_s(4,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle',':','LineWidth',4,'MarkerSize',4,'DisplayName', sprintf('Study anticaricature,\nTest anticaricature'));
 
 %     plot(fas_car(1,:)', hits_car_s(1,:)','Marker','o','MarkerFaceColor',plot_cmap(2,:),'MarkerEdgeColor',plot_cmap(2,:),'Color',plot_cmap(2,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName', 'Study Anticaricature, Test anticaricature');
 %     plot(fas_car(2,:)', hits_car_s(2,:)','Marker','o','MarkerFaceColor',plot_cmap(1,:),'MarkerEdgeColor',plot_cmap(1,:),'Color',plot_cmap(1,:),'LineStyle','-','LineWidth',1,'MarkerSize',3,'DisplayName','Study Anticaricature, Test caricature');
