@@ -301,6 +301,7 @@ def get_trial_distances(face_descriptions, dat, gender):
             # if (gender == "All") | (paired.iloc[perp_i]["Gender"] == gender):
             perps_distances = pd.concat([perps_distances,pd.DataFrame([new_row_data])], ignore_index=True)
             
+    distances_plot_data = perps_distances.groupby(['Caricature level','Match', 'Simulated participant'])['Distance'].mean().reset_index()     
             
     ####THE DISTANCES PLOT!!!!!######
     fontsize = 22
@@ -316,9 +317,9 @@ def get_trial_distances(face_descriptions, dat, gender):
     # sns.barplot(ax=axs, data=perps_distances, x='Match', hue='Caricature level', y='Distance', ci=None, order = order, hue_order = hue_order, alpha=0.3)
     
     # # Create box plots with dodging
-    sns.boxplot(data=perps_distances, x='Match', y='Distance', hue='Caricature level', order = order, hue_order = hue_order, dodge=True, boxprops=dict(alpha=.2),showfliers = False)
+    sns.boxplot(data=distances_plot_data, x='Match', y='Distance', hue='Caricature level', order = order, hue_order = hue_order, dodge=True, boxprops=dict(alpha=.2),showfliers = False)
     
-    sns.stripplot(ax=axs, x='Match', y='Distance', hue='Caricature level', data=perps_distances, order = order, hue_order = hue_order, dodge=True, jitter=True )
+    sns.stripplot(ax=axs, x='Match', y='Distance', hue='Caricature level', data=distances_plot_data, order = order, hue_order = hue_order, dodge=True, jitter=True )
 
     axs.tick_params(labelsize=fontsize)  # Increase tick label font size
     axs.set_xlabel('')  # Suppress x-axis label
@@ -758,16 +759,16 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 filenames, face_descriptions = get_face_descriptions_from_files()
 
 #########Set up vgg16 model
-# from keras.applications import vgg16
-# from keras.models import Model
-# model = vgg16.VGG16(weights='imagenet', include_top=True)
-# model2 = Model(model.input, model.layers[-2].output)
-# from keras.applications.vgg16 import preprocess_input    
+from keras.applications import vgg16
+from keras.models import Model
+model = vgg16.VGG16(weights='imagenet', include_top=True)
+model2 = Model(model.input, model.layers[-2].output)
+from keras.applications.vgg16 import preprocess_input    
 
-#########Set up vggFACE model
-from keras_vggface.vggface import VGGFace
-model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
-from keras_vggface.utils import preprocess_input
+# #########Set up vggFACE model
+# from keras_vggface.vggface import VGGFace
+# model2 = VGGFace(include_top=False, input_shape=(224, 224, 3), pooling='avg')
+# from keras_vggface.utils import preprocess_input
 
 
 #########Proprocess images and project them 
